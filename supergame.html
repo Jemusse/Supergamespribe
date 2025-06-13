@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SuperGame - Aviator Simulado</title>
+  <style>
+    body {
+      background-color: #000;
+      color: #fff;
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+    }
+    h1 {
+      color: #ff3c00;
+    }
+    .game-container {
+      background: #111;
+      padding: 20px;
+      border-radius: 12px;
+      width: 100%;
+      max-width: 500px;
+      text-align: center;
+    }
+    .balance {
+      font-size: 1.2em;
+      margin-bottom: 10px;
+    }
+    .multiplier {
+      font-size: 2em;
+      margin: 20px 0;
+      color: #0f0;
+    }
+    button {
+      padding: 10px 20px;
+      margin: 5px;
+      font-size: 1em;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .bet {
+      background-color: #007bff;
+      color: white;
+    }
+    .cashout {
+      background-color: #ffc107;
+      color: black;
+    }
+    .recharge {
+      background-color: #28a745;
+      margin-top: 20px;
+    }
+    .history {
+      margin-top: 20px;
+      font-size: 0.9em;
+    }
+  </style>
+</head>
+<body>
+  <h1>SuperGame - Aviator Simulado</h1>
+  <div class="game-container">
+    <div class="balance">Saldo: <span id="balance">1000</span> MZN</div>
+    <div class="multiplier" id="multiplier">1.00x</div>
+    <button class="bet" onclick="startGame()">Apostar 100</button>
+    <button class="cashout" onclick="cashOut()">Sair</button>
+    <button class="recharge" onclick="window.location.href='https://www.megagamelive.com/affiliates/?btag=2184909'">Recarregar Saldo</button>
+    <div class="history" id="history"></div>
+  </div>
+
+  <script>
+    let balance = 1000;
+    let multiplier = 1.0;
+    let playing = false;
+    let interval;
+    let bet = 0;
+
+    function startGame() {
+      if (playing || balance < 100) return;
+      bet = 100;
+      balance -= bet;
+      updateBalance();
+      multiplier = 1.0;
+      document.getElementById("multiplier").innerText = multiplier.toFixed(2) + "x";
+      playing = true;
+
+      interval = setInterval(() => {
+        multiplier += Math.random() * 0.2;
+        document.getElementById("multiplier").innerText = multiplier.toFixed(2) + "x";
+
+        // simulação de falha
+        if (Math.random() < 0.02 || multiplier > 10) {
+          endGame(false);
+        }
+      }, 200);
+    }
+
+    function cashOut() {
+      if (!playing) return;
+      const win = bet * multiplier;
+      balance += Math.floor(win);
+      addHistory("Ganhou: " + Math.floor(win) + " MZN (" + multiplier.toFixed(2) + "x)");
+      endGame(true);
+    }
+
+    function endGame(success) {
+      clearInterval(interval);
+      if (!success) {
+        addHistory("Perdeu: " + bet + " MZN (" + multiplier.toFixed(2) + "x)");
+      }
+      playing = false;
+      multiplier = 1.0;
+      updateBalance();
+    }
+
+    function updateBalance() {
+      document.getElementById("balance").innerText = balance;
+    }
+
+    function addHistory(msg) {
+      const hist = document.getElementById("history");
+      const entry = document.createElement("div");
+      entry.innerText = msg;
+      hist.prepend(entry);
+    }
+  </script>
+</body>
+</html>
